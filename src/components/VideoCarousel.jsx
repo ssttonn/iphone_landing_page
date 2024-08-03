@@ -5,9 +5,8 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { pauseImg, playImg, replayImg } from "../utils";
 import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { animateWithGsap } from "../utils/animations";
 
-gsap.registerPlugin(ScrollTrigger)
 
 const useVideoCarousel = () => {
   const videoRef = useRef([]);
@@ -54,17 +53,13 @@ const useVideoCarousel = () => {
   const { currentVideoIndex, isPlaying } = video;
 
   useGSAP(() => {
-    gsap.to("#slider", {
+    animateWithGsap("#slider", {
       transform: `translateX(${-100 * video.currentVideoIndex}%)`,
       duration: 1,
       ease: "power2.inOut"
     })
 
-    gsap.to("#video", {
-      scrollTrigger: {
-        trigger: "#video",
-        toggleActions: "restart none none none",
-      },
+    animateWithGsap("#video", {
       onComplete: () => {
         if (!isPlaying && !isFirstPlay) {
           return
@@ -83,7 +78,7 @@ const useVideoCarousel = () => {
     const videoSpan = videoSpanRef.current[currentVideoIndex]
 
     if (videoSpan && isPlaying) {
-      let anim = gsap.to(videoSpan, {
+      let anim = animateWithGsap(videoSpan, {
         onUpdate: () => {
 
           const progress = Math.ceil(anim.progress() * 100)
@@ -93,28 +88,23 @@ const useVideoCarousel = () => {
           if (progress != currentProgress) {
             currentProgress = progress
 
-            gsap.to(videoDiv, {
-              width:
-                window.innerWidth < 760
-                  ? "10vw"
-                  : window.innerWidth < 1200
-                  ? "10vw"
-                  : "4vw",
+            animateWithGsap(videoDiv, {
+              width: window.innerWidth < 760 ? "10vw" : window.innerWidth < 1200 ? "10vw" : "4vw",
             });
 
-            gsap.to(videoSpan, {
+            animateWithGsap(videoSpan, {
               width: `${currentProgress}%`,
-              background: "white"
-            })
+              background: "white",
+            });
           }
         },
         onComplete: () => {
           if (isPlaying) {
-            gsap.to(videoDiv, {
+            animateWithGsap(videoDiv, {
               width: "0.75rem"
             })
 
-            gsap.to(videoSpan, {
+            animateWithGsap(videoSpan, {
               background: "#afafaf"
             })
           }
